@@ -74,7 +74,7 @@ namespace SpriterDotNetUnity
 
             foreach (SpriterAnimation animation in entity.Animations)
             {
-                foreach (SpriterMainLineKey mainKey in animation.MainlineKeys)
+                foreach (SpriterMainlineKey mainKey in animation.MainlineKeys)
                 {
                     maxObjects = Math.Max(maxObjects, mainKey.ObjectRefs.Length);
                 }

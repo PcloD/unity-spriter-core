@@ -8,7 +8,10 @@ using UnityEngine;
 
 namespace SpriterDotNetUnity
 {
-    public class UnitySpriterAnimator : SpriterAnimator<Sprite>
+    public class Sound {
+    }
+
+    public class UnitySpriterAnimator : SpriterAnimator<Sound, Sprite>
     {
         private GameObject[] pivots;
         private GameObject[] children;
@@ -19,7 +22,7 @@ namespace SpriterDotNetUnity
         {
             this.pivots = pivots;
             this.children = children;
-            
+
             renderers = new SpriteRenderer[children.Length];
             for (int i = 0; i < children.Length; ++i)
             {
@@ -27,7 +30,7 @@ namespace SpriterDotNetUnity
             }
         }
 
-        protected override void ApplyTransform(Sprite sprite, SpriterObjectInfo info)
+        /*protected override void ApplySpriteTransform(Sprite sprite, SpriterObjectInfo info)
         {
             GameObject child = children[index];
             GameObject pivot = pivots[index];
@@ -46,14 +49,14 @@ namespace SpriterDotNetUnity
             child.transform.localScale = new Vector3(info.ScaleX, info.ScaleY, 1);
 
             ++index;
-        }
+        }/*
 
-        protected override void Animate()
+        /*protected override void Animate()
         {
             foreach (SpriteRenderer renderer in renderers) renderer.sprite = null;
             index = 0;
 
             base.Animate();
-        }
+        }*/
     }
 }
