@@ -183,7 +183,7 @@ namespace SpriterDotNet
 
             if (keyB == null) return keyA.VariableValue;
 
-            float adjustedTime = keyA.Time == keyB.Time ? targetTime : AdjustTime(keyA, keyB, animation.Length, targetTime);
+            // float adjustedTime = keyA.Time == keyB.Time ? targetTime : AdjustTime(keyA, keyB, animation.Length, targetTime);
             float factor = GetFactor(keyA, keyB, animation.Length, targetTime);
 
             return Interpolate(keyA.VariableValue, keyB.VariableValue, factor);

@@ -34,21 +34,50 @@ namespace SpriterDotNetUnity
         [HideInInspector]
         public bool UseNativeTags;
 
-        public UnitySpriterAnimator Animator { get; private set; }
+        public UnitySpriterAnimator SpriterAnimator { get; private set; }
+
+        [Tooltip("The animation to load when this sprite is initially manifest")]
+        public string DefaultAnimation = null;
 
         private string defaultTag;
 
-        public void Start()
-        {
-            SpriterEntity entity = SpriterData.Spriter.Entities[EntityIndex];
-            AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+        /// Is this animation currently running?
+        [HideInInspector]
+        public bool Running = false;
 
-            Animator = new UnitySpriterAnimator(entity, ChildData, audioSource);
-            RegisterSpritesAndSounds();
+        #if UNITY_EDITOR
+        public UnitySpriterAnimator EditorData() {
+          if (SpriterAnimator == null) {
+            InitAnimator();
+            Running = false;
+          }
+          return SpriterAnimator;
+        }
+        #endif
 
-            if (UseNativeTags) defaultTag = gameObject.tag;
+        /// Initialize the animatior
+        private void InitAnimator() {
+          SpriterEntity entity = SpriterData.Spriter.Entities[EntityIndex];
+          AudioSource audioSource = gameObject.GetComponent<AudioSource>();
 
-            Animator.Step(0);
+          SpriterAnimator = new UnitySpriterAnimator(entity, ChildData, audioSource);
+          RegisterSpritesAndSounds();
+
+          if (UseNativeTags) defaultTag = gameObject.tag;
+
+          if (!String.IsNullOrEmpty(DefaultAnimation)) {
+            N.Console.Log("Trying to set animation {0}", DefaultAnimation);
+            foreach (var i in SpriterAnimator.GetAnimations()) {
+              N.Console.Log(i);
+            }
+            SpriterAnimator.Transition(DefaultAnimation, 0);
+          }
+          SpriterAnimator.Step(0);
+        }
+
+        public void Start() {
+            Running = true;
+            InitAnimator();
         }
 
         public void Update()
@@ -57,12 +86,12 @@ namespace SpriterDotNetUnity
             if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode) return;
 #endif
 
-            if (Animator == null) return;
-            Animator.Step(Time.deltaTime * 1000.0f);
+            if (SpriterAnimator == null) return;
+            SpriterAnimator.Step(Time.deltaTime * 1000.0f);
 
             if (UseNativeTags)
             {
-                var tags = Animator.Metadata.AnimationTags;
+                var tags = SpriterAnimator.Metadata.AnimationTags;
                 if (tags != null && tags.Count > 0) gameObject.tag = tags[0];
                 else gameObject.tag = defaultTag;
             }
@@ -72,8 +101,8 @@ namespace SpriterDotNetUnity
         {
             foreach (SdnFileEntry entry in SpriterData.FileEntries)
             {
-                if (entry.Sprite != null) Animator.Register(entry.FolderId, entry.FileId, entry.Sprite);
-                else Animator.Register(entry.FolderId, entry.FileId, entry.Sound);
+                if (entry.Sprite != null) SpriterAnimator.Register(entry.FolderId, entry.FileId, entry.Sprite);
+                else SpriterAnimator.Register(entry.FolderId, entry.FileId, entry.Sound);
             }
         }
     }
